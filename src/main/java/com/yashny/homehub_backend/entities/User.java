@@ -29,4 +29,13 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(columnDefinition = "boolean default true")
+    private boolean active;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
+    @Column(nullable = false)
+    private String role;
 }

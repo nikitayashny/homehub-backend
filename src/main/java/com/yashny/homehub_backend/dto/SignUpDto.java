@@ -20,4 +20,7 @@ public class SignUpDto {
     @NonNull
     private char[] password;
 
+    @NonNull
+    private String phoneNumber;
+
 }

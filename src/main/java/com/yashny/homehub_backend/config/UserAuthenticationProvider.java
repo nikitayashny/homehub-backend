@@ -28,17 +28,18 @@ public class UserAuthenticationProvider {
 
     @PostConstruct
     protected void init() {
-        // this is to avoid having the raw secret key available in the JVM
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String login) {
+    public String createToken(String login, Long id, String role) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + 3600000); // 1 hour
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         return JWT.create()
-                .withSubject(login)
+                .withClaim("id", id)
+                .withClaim("login", login)
+                .withClaim("role", role)
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .sign(algorithm);
@@ -52,7 +53,8 @@ public class UserAuthenticationProvider {
 
         DecodedJWT decoded = verifier.verify(token);
 
-        UserDto user = userService.findByLogin(decoded.getSubject());
+        String login = decoded.getClaim("login").asString();
+        UserDto user = userService.findByLogin(login);
 
         return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
     }
