@@ -4,9 +4,11 @@ import com.yashny.homehub_backend.entities.Realt;
 import com.yashny.homehub_backend.entities.User;
 import com.yashny.homehub_backend.repositories.RealtRepository;
 import com.yashny.homehub_backend.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yashny.homehub_backend.entities.Image;
@@ -71,5 +73,26 @@ public class RealtService {
         image.setSize(file.getSize());
         image.setBytes(file.getBytes());
         return image;
+    }
+
+    public void deleteRealt(Long id) {
+        Realt realt = realtRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
+
+//        List<Realt> oldRealts = realt.getUser().getRealts();
+//        oldRealts.remove(realt);
+//        realt.getUser().setRealts(oldRealts);
+
+//        List<Favorite> favoritesToRemove = favoriteRepository.findAllByRealt(realt);
+//        List<User> allUsers = userRepository.findAll();
+//        for (User user : allUsers) {
+//            List<Favorite> userFavorites = user.getFavorites();
+//            userFavorites.removeAll(favoritesToRemove);
+//            user.setFavorites(userFavorites);
+//        }
+//
+//        favoriteRepository.deleteAll(favoriteRepository.findAllByRealt(realt));
+
+        realtRepository.delete(realt);
     }
 }

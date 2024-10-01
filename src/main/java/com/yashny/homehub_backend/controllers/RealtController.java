@@ -5,6 +5,7 @@ import com.yashny.homehub_backend.entities.User;
 import com.yashny.homehub_backend.services.RealtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,12 +25,18 @@ public class RealtController {
     }
 
     @PostMapping("/api/realt/create")
-    public ResponseEntity<String> createRealt(@RequestParam("file1") MultipartFile file1,
+    public ResponseEntity<List<Realt>> createRealt(@RequestParam("file1") MultipartFile file1,
                                               @RequestParam("file2") MultipartFile file2,
                                               @RequestParam("file3") MultipartFile file3,
                                               @ModelAttribute Realt realt,
                                               @RequestParam Long userId) throws IOException {
         realtService.saveRealt(userId, realt, file1, file2, file3);
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(realtService.listRealts());
+    }
+
+    @PostMapping("/api/realt/delete/{id}")
+    public ResponseEntity<List<Realt>> deleteRealt(@PathVariable Long id) throws IOException {
+        realtService.deleteRealt(id);
+        return ResponseEntity.ok(realtService.listRealts());
     }
 }
