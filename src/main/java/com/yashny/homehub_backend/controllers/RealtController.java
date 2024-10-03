@@ -24,6 +24,11 @@ public class RealtController {
         return ResponseEntity.ok(realtService.listRealts());
     }
 
+    @GetMapping("/api/realt/{id}")
+    public ResponseEntity<Realt> realt(@PathVariable Long id) throws IOException {
+        return ResponseEntity.ok(realtService.getRealt(id));
+    }
+
     @PostMapping("/api/realt/create")
     public ResponseEntity<List<Realt>> createRealt(@RequestParam("file1") MultipartFile file1,
                                               @RequestParam("file2") MultipartFile file2,

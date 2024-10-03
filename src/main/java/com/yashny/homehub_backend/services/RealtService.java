@@ -79,20 +79,20 @@ public class RealtService {
         Realt realt = realtRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
 
-//        List<Realt> oldRealts = realt.getUser().getRealts();
-//        oldRealts.remove(realt);
-//        realt.getUser().setRealts(oldRealts);
-
-//        List<Favorite> favoritesToRemove = favoriteRepository.findAllByRealt(realt);
-//        List<User> allUsers = userRepository.findAll();
-//        for (User user : allUsers) {
-//            List<Favorite> userFavorites = user.getFavorites();
-//            userFavorites.removeAll(favoritesToRemove);
-//            user.setFavorites(userFavorites);
-//        }
-//
-//        favoriteRepository.deleteAll(favoriteRepository.findAllByRealt(realt));
-
         realtRepository.delete(realt);
+    }
+
+    public Realt getRealt(Long id) {
+        Realt realt = realtRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
+
+        realt.setImages(realt.getImages().stream()
+                .map(image -> {
+                    image.setRealt(null);
+                    return image;
+                })
+                .collect(Collectors.toList()));
+
+        return realt;
     }
 }

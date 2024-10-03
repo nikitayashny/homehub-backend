@@ -31,7 +31,7 @@ public class UserAuthenticationProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String login, Long id, String role) {
+    public String createToken(String login, Long id, String role, String name) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + 3600000); // 1 hour
 
@@ -40,6 +40,7 @@ public class UserAuthenticationProvider {
                 .withClaim("id", id)
                 .withClaim("login", login)
                 .withClaim("role", role)
+                .withClaim("name", name)
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .sign(algorithm);
