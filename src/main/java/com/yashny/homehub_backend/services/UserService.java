@@ -3,10 +3,12 @@ package com.yashny.homehub_backend.services;
 import com.yashny.homehub_backend.dto.CredentialsDto;
 import com.yashny.homehub_backend.dto.SignUpDto;
 import com.yashny.homehub_backend.dto.UserDto;
+import com.yashny.homehub_backend.entities.Realt;
 import com.yashny.homehub_backend.entities.User;
 import com.yashny.homehub_backend.exceptions.AppException;
 import com.yashny.homehub_backend.mappers.UserMapper;
 import com.yashny.homehub_backend.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -45,7 +48,7 @@ public class UserService {
         User user = userMapper.signUpToUser(userDto);
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
         user.setActive(true);
-        user.setRole("ADMIN");
+        user.setRole("USER");
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserDto(savedUser);
@@ -55,6 +58,11 @@ public class UserService {
         User user = userRepository.findByLogin(login)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
         return userMapper.toUserDto(user);
+    }
+
+    public User getUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
     }
 
 }

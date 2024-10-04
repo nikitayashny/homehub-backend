@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface RealtRepository extends JpaRepository<Realt, Long> {
     List<Realt> findByName(String name);
-
     List<Realt> findAllByUser(User user);
 }

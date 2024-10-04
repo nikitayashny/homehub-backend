@@ -24,12 +24,12 @@ public class Realt {
     private String name;
     @Column(name = "price")
     private int price;
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)  // тут ол
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id")
     private Type type;
     @Column(name = "roomsCount")
     private int roomsCount;
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)  // тут ол
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "dealType_id")
     private DealType dealType;
     @Column(name = "country")
