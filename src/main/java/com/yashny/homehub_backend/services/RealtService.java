@@ -2,12 +2,15 @@ package com.yashny.homehub_backend.services;
 
 import com.yashny.homehub_backend.entities.Realt;
 import com.yashny.homehub_backend.entities.User;
+import com.yashny.homehub_backend.entities.Favorite;
+import com.yashny.homehub_backend.repositories.FavoriteRepository;
 import com.yashny.homehub_backend.repositories.RealtRepository;
 import com.yashny.homehub_backend.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yashny.homehub_backend.entities.Image;
@@ -23,6 +26,7 @@ public class RealtService {
 
     private final RealtRepository realtRepository;
     private final UserRepository userRepository;
+    private final FavoriteRepository favoriteRepository;
 
     public List<Realt> listRealts() {
         List<Realt> realts = realtRepository.findAll();
@@ -74,9 +78,12 @@ public class RealtService {
         return image;
     }
 
+    @Transactional
     public void deleteRealt(Long id) {
         Realt realt = realtRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
+
+        favoriteRepository.deleteAllByRealtId(id);
 
         realtRepository.delete(realt);
     }

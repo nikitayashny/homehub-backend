@@ -16,7 +16,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/api/user/{id}")
-    public ResponseEntity<User> realt(@PathVariable Long id) throws IOException {
+    public ResponseEntity<User> getOneUser(@PathVariable Long id) throws IOException {
         return ResponseEntity.ok(userService.getUser(id));
     }
 }
