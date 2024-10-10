@@ -3,7 +3,6 @@ package com.yashny.homehub_backend.services;
 import com.yashny.homehub_backend.dto.CredentialsDto;
 import com.yashny.homehub_backend.dto.SignUpDto;
 import com.yashny.homehub_backend.dto.UserDto;
-import com.yashny.homehub_backend.entities.Realt;
 import com.yashny.homehub_backend.entities.User;
 import com.yashny.homehub_backend.exceptions.AppException;
 import com.yashny.homehub_backend.mappers.UserMapper;
@@ -15,8 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -65,4 +64,7 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
     }
 
+    public List<User> listUsers() {
+        return userRepository.findAll();
+    }
 }
