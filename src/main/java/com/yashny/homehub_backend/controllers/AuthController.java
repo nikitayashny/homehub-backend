@@ -7,6 +7,7 @@ import com.yashny.homehub_backend.dto.UserDto;
 import com.yashny.homehub_backend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,12 @@ public class AuthController {
     public ResponseEntity<UserDto> login(@RequestBody @Validated CredentialsDto credentialsDto) {
         UserDto userDto = userService.login(credentialsDto);
         String name = userDto.getFirstName() + ' ' + userDto.getLastName();
-        userDto.setToken(userAuthenticationProvider.createToken(userDto.getLogin(), userDto.getId(), userDto.getRole(), name));
-        return ResponseEntity.ok(userDto);
+        if (userDto.isActive()) {
+            userDto.setToken(userAuthenticationProvider.createToken(userDto.getLogin(), userDto.getId(), userDto.getRole(), name));
+            return ResponseEntity.ok(userDto);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .build();
     }
 
     @PostMapping("/register")

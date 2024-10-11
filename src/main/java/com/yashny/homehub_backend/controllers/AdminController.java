@@ -15,7 +15,19 @@ public class AdminController {
     private final UserService userService;
 
     @GetMapping("/api/users")
-    public ResponseEntity<List<User>> realts() {
+    public ResponseEntity<List<User>> users() {
+        return ResponseEntity.ok(userService.listUsers());
+    }
+
+    @PostMapping("/api/users/ban/{id}")
+    public ResponseEntity<List<User>> banUser(@PathVariable Long id) {
+        userService.banUser(id);
+        return ResponseEntity.ok(userService.listUsers());
+    }
+
+    @PostMapping("/api/users/change/{id}")
+    public ResponseEntity<List<User>> changeUserRole(@PathVariable Long id) {
+        userService.changeRole(id);
         return ResponseEntity.ok(userService.listUsers());
     }
 }

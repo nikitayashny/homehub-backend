@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -66,5 +67,27 @@ public class UserService {
 
     public List<User> listUsers() {
         return userRepository.findAll();
+    }
+
+    public void changeRole(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+        if (Objects.equals(user.getRole(), "USER")) {
+            user.setRole("ADMIN");
+        } else {
+            user.setRole("USER");
+        }
+        userRepository.save(user);
+    }
+
+    public void banUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+        if (user.isActive()) {
+            user.setActive(false);
+        } else {
+            user.setActive(true);
+        }
+        userRepository.save(user);
     }
 }
