@@ -25,12 +25,14 @@ public class PostController {
     }
 
     @PostMapping("/api/news")
-    public ResponseEntity<List<Post>> createPost(@ModelAttribute Post post) {
-//        if (userAuthenticationProvider.isAdmin(authorization)) {
-//            postService.createPost(post);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//        }
+    public ResponseEntity<List<Post>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+                                                 @ModelAttribute Post post) {
+        String token = authorization.substring(7);
+        if (userAuthenticationProvider.isAdmin(token)) {
+            postService.createPost(post);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         postService.createPost(post);
         return ResponseEntity.ok(postService.listPosts());
     }
