@@ -1,5 +1,6 @@
 package com.yashny.homehub_backend.services;
 
+import com.yashny.homehub_backend.dto.RealtResponseDto;
 import com.yashny.homehub_backend.entities.Realt;
 import com.yashny.homehub_backend.entities.User;
 import com.yashny.homehub_backend.entities.Favorite;
@@ -17,6 +18,7 @@ import com.yashny.homehub_backend.entities.Image;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,10 +30,39 @@ public class RealtService {
     private final UserRepository userRepository;
     private final FavoriteRepository favoriteRepository;
 
-    public List<Realt> listRealts() {
+    public RealtResponseDto listRealts(Long limit, Long page, Long selectedType, Long selectedDealType, Long userId) {
+        if (limit <= 0 || page <= 0) {
+            throw new IllegalArgumentException("Limit must be greater than 0 and page must be 0 or greater.");
+        }
+
+        int start = Math.toIntExact(page * limit - limit);
         List<Realt> realts = realtRepository.findAll();
 
-        for (Realt realt : realts) {
+        if (selectedType != 0) {
+            realts = realts.stream()
+                    .filter(realt -> selectedType.equals(realt.getType().getId()))
+                    .collect(Collectors.toList());
+        }
+        if (selectedDealType != 0) {
+            realts = realts.stream()
+                    .filter(realt -> selectedDealType.equals(realt.getDealType().getId()))
+                    .collect(Collectors.toList());
+        }
+
+        if (userId != 0) {
+            realts = realts.stream()
+                    .filter(realt -> userId.equals(realt.getUser().getId()))
+                    .collect(Collectors.toList());
+        }
+
+        long totalCount = realts.size();
+
+        List<Realt> paginatedRealts = realts.stream()
+                .skip(start)
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        for (Realt realt : paginatedRealts) {
             realt.setImages(realt.getImages().stream()
                     .map(image -> {
                         image.setRealt(null);
@@ -40,7 +71,7 @@ public class RealtService {
                     .collect(Collectors.toList()));
         }
 
-        return realts;
+        return new RealtResponseDto(paginatedRealts, totalCount);
     }
 
     public void saveRealt(Long userId, Realt realt, MultipartFile file1, MultipartFile file2, MultipartFile file3) throws IOException {

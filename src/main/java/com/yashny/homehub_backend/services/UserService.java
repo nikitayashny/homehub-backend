@@ -3,26 +3,31 @@ package com.yashny.homehub_backend.services;
 import com.yashny.homehub_backend.dto.CredentialsDto;
 import com.yashny.homehub_backend.dto.SignUpDto;
 import com.yashny.homehub_backend.dto.UserDto;
+import com.yashny.homehub_backend.entities.Realt;
 import com.yashny.homehub_backend.entities.User;
 import com.yashny.homehub_backend.exceptions.AppException;
 import com.yashny.homehub_backend.mappers.UserMapper;
+import com.yashny.homehub_backend.repositories.RealtRepository;
 import com.yashny.homehub_backend.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.CharBuffer;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RealtRepository realtRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -89,5 +94,23 @@ public class UserService {
             user.setActive(true);
         }
         userRepository.save(user);
+    }
+
+    public List<Realt> getUsersRealts(Long id) {
+        List<Realt> realts = realtRepository.findAll();
+
+        realts = realts.stream()
+                .filter(realt -> id.equals(realt.getUser().getId()))
+                .collect(Collectors.toList());
+
+        for (Realt realt : realts) {
+            realt.setImages(realt.getImages().stream()
+                    .map(image -> {
+                        image.setRealt(null);
+                        return image;
+                    })
+                    .collect(Collectors.toList()));
+        }
+        return realts;
     }
 }

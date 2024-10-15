@@ -1,5 +1,6 @@
 package com.yashny.homehub_backend.controllers;
 
+import com.yashny.homehub_backend.dto.RealtResponseDto;
 import com.yashny.homehub_backend.entities.Realt;
 import com.yashny.homehub_backend.services.RealtService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,12 @@ public class RealtController {
     private final RealtService realtService;
 
     @GetMapping("/api/realt")
-    public ResponseEntity<List<Realt>> realts() {
-        return ResponseEntity.ok(realtService.listRealts());
+    public ResponseEntity<RealtResponseDto> realts(@RequestParam Long limit,
+                                                   @RequestParam Long page,
+                                                   @RequestParam Long selectedType,
+                                                   @RequestParam Long selectedDealType,
+                                                   @RequestParam Long userId) {
+        return ResponseEntity.ok(realtService.listRealts(limit, page, selectedType, selectedDealType, userId));
     }
 
     @GetMapping("/api/realt/{id}")
@@ -27,18 +32,18 @@ public class RealtController {
     }
 
     @PostMapping("/api/realt/create")
-    public ResponseEntity<List<Realt>> createRealt(@RequestParam("file1") MultipartFile file1,
+    public ResponseEntity<RealtResponseDto> createRealt(@RequestParam("file1") MultipartFile file1,
                                               @RequestParam("file2") MultipartFile file2,
                                               @RequestParam("file3") MultipartFile file3,
                                               @ModelAttribute Realt realt,
                                               @RequestParam Long userId) throws IOException {
         realtService.saveRealt(userId, realt, file1, file2, file3);
-        return ResponseEntity.ok(realtService.listRealts());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/api/realt/delete/{id}")
-    public ResponseEntity<List<Realt>> deleteRealt(@PathVariable Long id) throws IOException {
+    public ResponseEntity<RealtResponseDto> deleteRealt(@PathVariable Long id) throws IOException {
         realtService.deleteRealt(id);
-        return ResponseEntity.ok(realtService.listRealts());
+        return ResponseEntity.ok().build();
     }
 }
