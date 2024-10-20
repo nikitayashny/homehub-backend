@@ -2,14 +2,17 @@ package com.yashny.homehub_backend.controllers;
 
 import com.yashny.homehub_backend.config.UserAuthenticationProvider;
 import com.yashny.homehub_backend.dto.PostDto;
+import com.yashny.homehub_backend.dto.RealtResponseDto;
 import com.yashny.homehub_backend.entities.Post;
 import com.yashny.homehub_backend.services.PostService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,7 +36,18 @@ public class PostController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        postService.createPost(post);
-        return ResponseEntity.ok(postService.listPosts());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/api/news/{id}")
+    public ResponseEntity<Response> deleteNews(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+                                               @PathVariable Long id) throws IOException {
+        String token = authorization.substring(7);
+        if (userAuthenticationProvider.isAdmin(token)) {
+            postService.deletePost(id);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok().build();
     }
 }

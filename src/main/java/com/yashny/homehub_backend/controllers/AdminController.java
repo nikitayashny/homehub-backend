@@ -22,12 +22,12 @@ public class AdminController {
     @PostMapping("/api/users/ban/{id}")
     public ResponseEntity<List<User>> banUser(@PathVariable Long id) {
         userService.banUser(id);
-        return ResponseEntity.ok(userService.listUsers());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/api/users/change/{id}")
     public ResponseEntity<List<User>> changeUserRole(@PathVariable Long id) {
         userService.changeRole(id);
-        return ResponseEntity.ok(userService.listUsers());
+        return ResponseEntity.ok().build();
     }
 }
