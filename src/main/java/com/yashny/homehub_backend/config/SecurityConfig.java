@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/realt/**", "/images/**", "/api/user/**", "/api/news/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/realt/**", "/images/**", "/api/user/**", "/api/news/**", "/api/comments/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
