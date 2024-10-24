@@ -9,5 +9,4 @@ public class HomehubBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(HomehubBackendApplication.class, args);
 	}
-
 }

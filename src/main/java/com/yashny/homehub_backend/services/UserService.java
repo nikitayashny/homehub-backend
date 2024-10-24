@@ -5,9 +5,11 @@ import com.yashny.homehub_backend.dto.SignUpDto;
 import com.yashny.homehub_backend.dto.UserDto;
 import com.yashny.homehub_backend.entities.Realt;
 import com.yashny.homehub_backend.entities.User;
+import com.yashny.homehub_backend.entities.UserFilter;
 import com.yashny.homehub_backend.exceptions.AppException;
 import com.yashny.homehub_backend.mappers.UserMapper;
 import com.yashny.homehub_backend.repositories.RealtRepository;
+import com.yashny.homehub_backend.repositories.UserFilterRepository;
 import com.yashny.homehub_backend.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RealtRepository realtRepository;
+    private final UserFilterRepository userFilterRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -55,6 +58,10 @@ public class UserService {
         user.setActive(true);
         user.setRole("USER");
         User savedUser = userRepository.save(user);
+
+        UserFilter userFilter = new UserFilter();
+        userFilter.setUser(user);
+        userFilterRepository.save(userFilter);
 
         return userMapper.toUserDto(savedUser);
     }
