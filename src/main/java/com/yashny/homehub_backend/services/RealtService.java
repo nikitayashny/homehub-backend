@@ -1,11 +1,10 @@
 package com.yashny.homehub_backend.services;
 
 import com.yashny.homehub_backend.dto.RealtResponseDto;
-import com.yashny.homehub_backend.entities.Realt;
-import com.yashny.homehub_backend.entities.User;
-import com.yashny.homehub_backend.entities.Favorite;
+import com.yashny.homehub_backend.entities.*;
 import com.yashny.homehub_backend.repositories.FavoriteRepository;
 import com.yashny.homehub_backend.repositories.RealtRepository;
+import com.yashny.homehub_backend.repositories.UserFilterRepository;
 import com.yashny.homehub_backend.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.yashny.homehub_backend.entities.Image;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +25,8 @@ public class RealtService {
     private final RealtRepository realtRepository;
     private final UserRepository userRepository;
     private final FavoriteRepository favoriteRepository;
+    private final UserFilterRepository userFilterRepository;
+    private final EmailSenderService emailSenderService;
 
     public RealtResponseDto listRealts(Long limit, Long page, Long selectedType, Long selectedDealType, Long userId) {
         if (limit <= 0 || page <= 0) {
@@ -97,6 +95,57 @@ public class RealtService {
         Realt realtFromDb = realtRepository.save(realt);
         realtFromDb.setPreviewImageId(realtFromDb.getImages().get(0).getId());
         realtRepository.save(realt);
+
+        List<UserFilter> userFilterList = userFilterRepository.findAll();
+        List<UserFilter> activeUserFilters = userFilterList.stream()
+                .filter(UserFilter::isActive)
+                .toList();
+
+        for (UserFilter filter : activeUserFilters) {
+            boolean matches = true;
+
+            if (filter.getCity() != null && !filter.getCity().isEmpty() && !filter.getCity().equals(realt.getCity())) {
+                matches = false;
+            }
+
+            if (filter.getMaxPrice() != 0 && filter.getMaxPrice() < realt.getPrice()) {
+                matches = false;
+            }
+
+            if (filter.getRoomsCount() != 0 && filter.getRoomsCount() != realt.getRoomsCount()) {
+                matches = false;
+            }
+
+            if (filter.getType() != null && filter.getType() != realt.getType()) {
+                matches = false;
+            }
+
+            if (filter.getDealType() != null && filter.getDealType() != realt.getDealType()) {
+                matches = false;
+            }
+
+            if (matches) {
+                String subject = "Подходящее для вас объявление!";
+                String body = String.format(
+                        "Здравствуйте, %s!\n\n" +
+                                "Мы рады сообщить, что найдено новое объявление, подходящее под ваши фильтры:\n" +
+                                "Название: %s\n" +
+                                "Цена: %d\n" +
+                                "Количество комнат: %d\n" +
+                                "Город: %s\n" +
+                                "Посмотреть можно по ссылке: %s%d\n\n" +
+                                "С уважением,\n" +
+                                "HomeHub.",
+                        filter.getUser().getFirstName(),
+                        realt.getName(),
+                        realt.getPrice(),
+                        realt.getRoomsCount(),
+                        realt.getCity(),
+                        "http://localhost:3000/realt/", realt.getId()
+                );
+                emailSenderService.sendEmail(filter.getUser().getLogin(), subject, body);
+            }
+        }
     }
 
     private Image toImageEntity(MultipartFile file) throws IOException {
