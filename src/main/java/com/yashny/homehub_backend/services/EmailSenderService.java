@@ -1,5 +1,6 @@
 package com.yashny.homehub_backend.services;
 
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,5 +22,12 @@ public class EmailSenderService {
         mailSender.send(message);
 
         System.out.println("Mail sent successfully...");
+    }
+
+    public void sendConfirmationCode(String toEmail, String confirmationCode) {
+        String subject = "Ваш код подтверждения";
+        String body = "Ваш код подтверждения: " + confirmationCode;
+
+        sendEmail(toEmail, subject, body);
     }
 }
