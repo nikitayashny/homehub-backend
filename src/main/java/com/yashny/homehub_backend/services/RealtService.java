@@ -28,7 +28,8 @@ public class RealtService {
     private final UserFilterRepository userFilterRepository;
     private final EmailSenderService emailSenderService;
 
-    public RealtResponseDto listRealts(Long limit, Long page, Long selectedType, Long selectedDealType, Long userId) {
+    public RealtResponseDto listRealts(Long limit, Long page, Long selectedType, Long selectedDealType, Long roomsCount,
+                                       Long maxPrice, Long userId) {
         if (limit <= 0 || page <= 0) {
             throw new IllegalArgumentException("Limit must be greater than 0 and page must be 0 or greater.");
         }
@@ -44,6 +45,21 @@ public class RealtService {
         if (selectedDealType != 0) {
             realts = realts.stream()
                     .filter(realt -> selectedDealType.equals(realt.getDealType().getId()))
+                    .collect(Collectors.toList());
+        }
+        if (roomsCount != 0 && roomsCount < 5) {
+            realts = realts.stream()
+                    .filter(realt -> roomsCount == realt.getRoomsCount())
+                    .collect(Collectors.toList());
+        }
+        if (roomsCount >= 5) {
+            realts = realts.stream()
+                    .filter(realt -> roomsCount <= realt.getRoomsCount())
+                    .collect(Collectors.toList());
+        }
+        if (maxPrice != -1) {
+            realts = realts.stream()
+                    .filter(realt -> maxPrice >= realt.getPrice())
                     .collect(Collectors.toList());
         }
 
@@ -180,5 +196,29 @@ public class RealtService {
                 .collect(Collectors.toList()));
 
         return realt;
+    }
+
+    public void likeRealt(Long id) {
+        Realt realt = realtRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
+        
+        realt.setLikes(realt.getLikes() + 1);
+        realtRepository.save(realt);
+    }
+
+    public void viewRealt(Long id) {
+        Realt realt = realtRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
+
+        realt.setViews(realt.getViews() + 1);
+        realtRepository.save(realt);
+    }
+
+    public void repostRealt(Long id) {
+        Realt realt = realtRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Realt not found with id " + id));
+
+        realt.setReposts(realt.getReposts() + 1);
+        realtRepository.save(realt);
     }
 }

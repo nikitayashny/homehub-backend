@@ -3,8 +3,10 @@ package com.yashny.homehub_backend.data;
 import com.yashny.homehub_backend.entities.DealType;
 import com.yashny.homehub_backend.entities.Type;
 import com.yashny.homehub_backend.entities.User;
+import com.yashny.homehub_backend.entities.UserFilter;
 import com.yashny.homehub_backend.repositories.DealTypeRepository;
 import com.yashny.homehub_backend.repositories.TypeRepository;
+import com.yashny.homehub_backend.repositories.UserFilterRepository;
 import com.yashny.homehub_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ public class DataLoader implements CommandLineRunner {
     private DealTypeRepository dealTypeRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserFilterRepository userFilterRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -33,19 +37,23 @@ public class DataLoader implements CommandLineRunner {
             typeRepository.save(new Type(null, "Дом"));
         }
         if (dealTypeRepository.count() == 0) {
-            dealTypeRepository.save(new DealType(null, "Продажа"));
             dealTypeRepository.save(new DealType(null, "Аренда"));
+            dealTypeRepository.save(new DealType(null, "Продажа"));
         }
         if (userRepository.count() == 0) {
             User admin = new User();
             admin.setActive(true);
-            admin.setLogin("admin@gmail.com");
+            admin.setLogin("homehuboff@gmail.com");
             admin.setFirstName("Администратор");
             admin.setLastName("Главный");
             admin.setPassword(passwordEncoder.encode("1"));
             admin.setPhoneNumber("+375444444444");
             admin.setRole("ADMIN");
             userRepository.save(admin);
+
+            UserFilter userFilter = new UserFilter();
+            userFilter.setUser(admin);
+            userFilterRepository.save(userFilter);
         }
     }
 }

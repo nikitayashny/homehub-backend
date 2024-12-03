@@ -55,6 +55,12 @@ public class Realt {
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+    @Column(name = "views", columnDefinition = "bigint default 0")
+    private Long views;
+    @Column(name = "reposts", columnDefinition = "bigint default 0")
+    private Long reposts;
+    @Column(name = "likes", columnDefinition = "bigint default 0")
+    private Long likes;
 
     @Transactional
     public void addImageToRealt(Image image) {

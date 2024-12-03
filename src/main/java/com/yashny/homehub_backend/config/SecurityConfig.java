@@ -24,7 +24,7 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "/login", "/register", "/confirm").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/register", "/confirm", "/api/realt/view/**", "/api/realt/repost/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/realt/**", "/images/**", "/api/user/**", "/api/news/**", "/api/comments/**").permitAll()
                         .anyRequest().authenticated()
                 )

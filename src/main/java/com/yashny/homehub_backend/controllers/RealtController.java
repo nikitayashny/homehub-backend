@@ -22,8 +22,11 @@ public class RealtController {
                                                    @RequestParam Long page,
                                                    @RequestParam Long selectedType,
                                                    @RequestParam Long selectedDealType,
+                                                   @RequestParam Long roomsCount,
+                                                   @RequestParam Long maxPrice,
                                                    @RequestParam Long userId) {
-        return ResponseEntity.ok(realtService.listRealts(limit, page, selectedType, selectedDealType, userId));
+        return ResponseEntity.ok(realtService.listRealts(limit, page, selectedType, selectedDealType, roomsCount,
+                maxPrice, userId));
     }
 
     @GetMapping("/api/realt/{id}")
@@ -44,6 +47,24 @@ public class RealtController {
     @PostMapping("/api/realt/delete/{id}")
     public ResponseEntity<RealtResponseDto> deleteRealt(@PathVariable Long id) throws IOException {
         realtService.deleteRealt(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("api/realt/like/{id}")
+    public ResponseEntity<?> likeRealt(@PathVariable Long id) {
+        realtService.likeRealt(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("api/realt/view/{id}")
+    public ResponseEntity<?> viewRealt(@PathVariable Long id) {
+        realtService.viewRealt(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("api/realt/repost/{id}")
+    public ResponseEntity<?> repostRealt(@PathVariable Long id) {
+        realtService.repostRealt(id);
         return ResponseEntity.ok().build();
     }
 }
