@@ -24,9 +24,10 @@ public class RealtController {
                                                    @RequestParam Long selectedDealType,
                                                    @RequestParam Long roomsCount,
                                                    @RequestParam Long maxPrice,
+                                                   @RequestParam Long sortType,
                                                    @RequestParam Long userId) {
         return ResponseEntity.ok(realtService.listRealts(limit, page, selectedType, selectedDealType, roomsCount,
-                maxPrice, userId));
+                maxPrice, sortType, userId));
     }
 
     @GetMapping("/api/realt/{id}")

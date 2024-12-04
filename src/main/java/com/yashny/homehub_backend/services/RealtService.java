@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class RealtService {
     private final EmailSenderService emailSenderService;
 
     public RealtResponseDto listRealts(Long limit, Long page, Long selectedType, Long selectedDealType, Long roomsCount,
-                                       Long maxPrice, Long userId) {
+                                       Long maxPrice, Long sortType, Long userId) {
         if (limit <= 0 || page <= 0) {
             throw new IllegalArgumentException("Limit must be greater than 0 and page must be 0 or greater.");
         }
@@ -71,7 +73,20 @@ public class RealtService {
 
         long totalCount = realts.size();
 
-        List<Realt> paginatedRealts = realts.stream()
+        List<Realt> sortedRealts = new ArrayList<>();
+
+        if (sortType == 1) {
+            sortedRealts = realts.stream()
+                .sorted(Comparator.comparingLong(realt ->
+                        realt.getViews() + realt.getLikes() * 5 + realt.getReposts() * 10))
+                .toList().reversed();
+        } else if (sortType == 2) {
+            sortedRealts = realts.stream()
+                    .sorted(Comparator.comparing(Realt::getDateOfCreated))
+                    .toList().reversed();
+        }
+
+        List<Realt> paginatedRealts = sortedRealts.stream()
                 .skip(start)
                 .limit(limit)
                 .collect(Collectors.toList());
