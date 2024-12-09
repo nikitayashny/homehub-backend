@@ -125,6 +125,9 @@ public class RealtService {
         log.info("Saving new Product. Name: {}; email: {};", realt.getName(), realt.getUser().getLogin());
         Realt realtFromDb = realtRepository.save(realt);
         realtFromDb.setPreviewImageId(realtFromDb.getImages().get(0).getId());
+        realt.setViews(0L);
+        realt.setLikes(0L);
+        realt.setReposts(0L);
         realtRepository.save(realt);
 
         List<UserFilter> userFilterList = userFilterRepository.findAll();
