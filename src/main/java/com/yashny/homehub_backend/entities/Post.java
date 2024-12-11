@@ -28,6 +28,17 @@ public class Post {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "post", orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @Column(name = "name")
+    private String name;
+    @Column(name = "originalFileName")
+    private String originalFileName;
+    @Column(name = "size")
+    private Long size;
+    @Column(name = "contentType")
+    private String contentType;
+    @Lob
+    private byte[] bytes;
+
     private LocalDateTime dateOfCreated;
     @PrePersist
     private void onCreate() { dateOfCreated = LocalDateTime.now(); }

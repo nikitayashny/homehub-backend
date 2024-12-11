@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,10 +30,15 @@ public class PostController {
 
     @PostMapping("/api/news")
     public ResponseEntity<List<Post>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
-                                                 @ModelAttribute Post post) {
+                                                 @ModelAttribute Post post,
+                                                 @RequestParam("file") MultipartFile file) {
         String token = authorization.substring(7);
         if (userAuthenticationProvider.isAdmin(token)) {
-            postService.createPost(post);
+            try {
+                postService.createPost(post, file);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
