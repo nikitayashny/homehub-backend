@@ -175,7 +175,7 @@ public class RealtService {
                         realt.getPrice(),
                         realt.getRoomsCount(),
                         realt.getCity(),
-                        "http://localhost:3000/realt/", realt.getId()
+                        "https://localhost:3000/realt/", realt.getId()
                 );
                 emailSenderService.sendEmail(filter.getUser().getLogin(), subject, body);
             }
